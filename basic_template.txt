@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+  <head>
+    <title>{{.Title}}</title>
+  </head>
+
+  <body style="text:center">
+  <h1>{{.Title}}</h1>
+
+  <div style="white-space:pre-wrap;">
+{{.Content}}
+  </div>
+  </body>
+
+</html>
