@@ -60,7 +60,6 @@ func prepareResponse(directive string, fileName string) ([]byte, error) {
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
-
 	var response []byte = []byte("Resource Not Found!")
 	
 	var err error
@@ -76,9 +75,9 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	/* If there is any kind of error preparing the response, 
-           display accordingly. */
+           handle it by displaying the index page. */
 	if (err != nil) {
-		response = []byte("Error, resource not found!")
+		response = []byte("ERROR, you've reached an invalid page.")
 	}
 
 	//Write response.

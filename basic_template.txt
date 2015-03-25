@@ -1,14 +1,42 @@
 <!DOCTYPE html>
-  <head>
+<head>
     <title>{{.Title}}</title>
-  </head>
 
-  <body style="text:center">
-  <h1>{{.Title}}</h1>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
 
-  <div style="white-space:pre-wrap;">
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
+
+    <!-- JQuery -->
+    <script src="https://code.jquery.com/jquery-2.1.3.js"></script>
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+
+    <!-- index.css -->
+    <link href="index.css" rel="stylesheet">
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+</head>
+
+<body>
+    <div class="container-fluid center-block">
+
+    <div class="header text-center">
+        <h1>Golang Recipes</h1>
+        <h3>{{.Title}}</h3>	
+    </div>
+
+    <div class="row">
+        <div class="col-sm-4 col-sm-offset-4">
+            <div style="white-space:pre-wrap;">
 {{.Content}}
-  </div>
-  </body>
-
+            </div>
+        <div class="footer text-center">
+            <a href="/">Back</a>
+        </div>
+    </div>
+</body>
 </html>
