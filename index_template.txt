@@ -30,24 +30,41 @@
             <h1>Golang Recipes</h1>
         </div>
 
-        <div class="recipes">
-	    <div class="basics">
-	        <h2>Basics</h2>    
-                <p><a href="/recipes/helloworld.go">Hello, World!</a></p>
+	<div class="row">
+	    <div class="intro col-md-4">
+	    	 <p class="hidden-xs">
+			Hello! Welcome Golang Recipes. This website aims to show example of how the Go programming language can be used. Feel free to contribute and create a pull request!
+		 </p>
 	    </div>
 
-	    <div class="data-structures">
-	        <h2>Data Structures</h2>
-	    </div>
+            <div class="recipes col-md-4 col-sm-6">
+    	        <div class="basics">
+	            <h2>Basics</h2>    
+                    <p><a href="/recipes/helloworld.go">Hello, World!</a></p>
+	        </div>
 
-	    <div class="packages">
-	        <h2>Packages</h2>
-		<p><a href="/recipes/template.go">html/template</a></p>
+	        <div class="data-structures">
+	            <h2>Data Structures</h2>
+	        </div>
+
+		<div class="packages">
+	            <h2>Packages</h2>
+		    <p><a href="/recipes/template.go">html/template</a></p>
+	    	</div>
+            </div>
+
+	    <div class="image col-md-4 col-sm-6">
+	        <img class="hidden-xs" src="https://github.com/golang-samples/gopher-vector/blob/master/gopher-side_color.png?raw=true">
 	    </div>
-        </div>
+	</div>
 
         <div class="footer">
             <p>Created By <a href="http://coreyprak.org">Corey Prak</a></p>
+	    
+	    <p>Image Credits</p>
+	    <p><a href="https://github.com/golang-samples/gopher-vector">Image Github Repo</a></p>
+	    <p>The Go gopher was designed by Renee French. (<a href="http://reneefrench.blogspot.com">http://reneefrench.blogspot.com/</a>)</p>
+	    <p>The gopher vector data was made by Takuya Ueda (<a href="http://u.hinoichi.net">http://u.hinoichi.net</a>). Licensed under the Creative Commons 3.0 Attributions license.</p>
         </div>
     </div>
 

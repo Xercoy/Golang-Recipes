@@ -48,12 +48,12 @@ func prepareResponse(directive string, fileName string) ([]byte, error) {
 
 	case "root":
 		response, err = getFileContent("index_template.txt", "root")
-		
+
 	case "recipes":
 
 		fileContent, err = getFileContent(fileName, "recipes")
 
-        response = []byte(parseTemplate(fileName, string(fileContent)))
+		response = []byte(parseTemplate(fileName, string(fileContent)))
 	}
 
 	return response, err
@@ -61,22 +61,22 @@ func prepareResponse(directive string, fileName string) ([]byte, error) {
 
 func handler(w http.ResponseWriter, r *http.Request) {
 	var response []byte = []byte("Resource Not Found!")
-	
+
 	var err error
 
 	/* Checks if path is at least /recipes, assumes there is more to the URL
 	   since it is ensuring that the length is greater than /recipes (8). */
-	if ((len(r.URL.Path) > 8) && (r.URL.Path[1:8] == "recipes") ){
+	if (len(r.URL.Path) > 8) && (r.URL.Path[1:8] == "recipes") {
 		response, err = prepareResponse("recipes", r.URL.Path[8:])
 
-	// Checks if path is root or exactly /recipes, loads homepage.
-	} else if (r.URL.Path == "/") || (r.URL.Path[1:8] == "recipes")   {
+		// Checks if path is root or exactly /recipes, loads homepage.
+	} else if (r.URL.Path == "/") || (r.URL.Path[1:8] == "recipes") {
 		response, err = prepareResponse("root", "")
 	}
 
-	/* If there is any kind of error preparing the response, 
-           handle it by displaying the index page. */
-	if (err != nil) {
+	/* If there is any kind of error preparing the response,
+	   handle it by displaying the index page. */
+	if err != nil {
 		response = []byte("ERROR, you've reached an invalid page.")
 	}
 
