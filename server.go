@@ -64,16 +64,18 @@ func getSliceOfRecipeNames(dir string) []string {
 	return rNames
 }
 
-func (self RecipePage) GenerateLinks() []string {
-	var linkSlice []string
+
+// Appending a string: http://stackoverflow.com/questions/1760757/how-to-efficiently-concatenate-strings-in-go
+func (self RecipePage) GenerateLinks() template.HTML {
+	var buffer bytes.Buffer
 
 	for index, rName := range self.RecipeName {
-		link := "<p><a href=\"" + self.FileName[index] + "\">" + rName + "</a></p>"
-
-		linkSlice = append(linkSlice, link)
+		link := "<p><a href=\"/recipes/" + self.FileName[index] + "\">" + rName + "</a></p>"
+		
+		buffer.WriteString(link)
 	}
 
-	return linkSlice
+	return template.HTML(buffer.String())
 }
 
 func getFileContent(fileName string, directive string) ([]byte, error) {
@@ -85,7 +87,6 @@ func getFileContent(fileName string, directive string) ([]byte, error) {
 		fileContent, err = ioutil.ReadFile("recipes/" + fileName)
 
 	case "root": 
-	case "template":
 		fileContent, err = ioutil.ReadFile(fileName)
 	}
 
@@ -106,7 +107,7 @@ func parseTemplate(fileName string, fileContent string, directive string) []byte
 
 		/* Fill out the data structure accordingly. This template doesn't 
 		   use the first two fields bc they're for recipes */
-		rPage = RecipePage{"", "", fileNameSlice, recipeNameSlice}
+		rPage = RecipePage{"", "", recipeNameSlice, fileNameSlice}
 
 		// Template for the index page.
 		templateFileName = []byte("index_template.txt")
@@ -168,9 +169,9 @@ func pathHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	/* If there is any kind of error preparing the response,
-	   handle it */
+	   handle it by displaying an error message. */
 	if err != nil {
-		panic(err)
+		//panic(err)
 	}
 
 	//Write response.
@@ -179,5 +180,5 @@ func pathHandler(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	http.HandleFunc("/", pathHandler)
-	http.ListenAndServe(":3000", nil)
+	http.ListenAndServe(":8080", nil)
 }
