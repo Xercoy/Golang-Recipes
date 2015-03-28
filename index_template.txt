@@ -32,9 +32,20 @@
 
 	<div class="row">
 	    <div class="intro col-md-4">
-	    	 <p class="hidden-xs">
-			Hello! Welcome Golang Recipes. This website aims to show examples of how the Go programming language can be used. Feel free to contribute and create a pull request!
-		 </p>
+	    	 <h3>
+	    	     <p class="hidden-xs">
+			  Hello! Welcome to Golang Recipes. This website aims to show examples of how the Go programming language can be used. Feel free to contribute and create a pull request! 
+		     </p>
+
+		     <p class="hidden-xs">
+		         Upcoming Additions:
+			 <ul>
+			     <li>SSL support</li>
+			     <li>Syntax Highlighting for code</li>
+			     <li>Go Playground examples</li>
+			 </ul>
+		     </p>
+		 </h2>
 	    </div>
 
             <div class="recipes col-md-4 col-sm-6">
@@ -48,7 +59,7 @@
 
         <div class="footer">
             <p>Created By <a href="http://coreyprak.org">Corey Prak</a></p>
-	    
+	    <p><a href="http://twitter.com/coreyprak">@coreyprak</a></p>
 	    <p>Image Credits</p>
 	    <p><a href="https://github.com/golang-samples/gopher-vector">Image Github Repo</a></p>
 	    <p>The Go gopher was designed by Renee French. (<a href="http://reneefrench.blogspot.com">http://reneefrench.blogspot.com/</a>)</p>
