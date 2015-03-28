@@ -33,7 +33,7 @@
 	<div class="row">
 	    <div class="intro col-md-4">
 	    	 <p class="hidden-xs">
-			Hello! Welcome Golang Recipes. This website aims to show example of how the Go programming language can be used. Feel free to contribute and create a pull request!
+			Hello! Welcome Golang Recipes. This website aims to show examples of how the Go programming language can be used. Feel free to contribute and create a pull request!
 		 </p>
 	    </div>
 
