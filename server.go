@@ -10,6 +10,11 @@ import (
 	"bufio"
 )
 
+/* Considered creating diff structs for each directive but 
+   that means more coding and more things to keep track of...
+   Who knows, maybe there will be a need for a page to keep
+   track of all of this info. Maybe the master struct should 
+   be an aggregation of all of the different structs? */
 type RecipePage struct {
 	Title, Content       string
 	RecipeName []string
@@ -87,16 +92,7 @@ func getFileContent(fileName string, directive string) ([]byte, error) {
 	return fileContent, err
 }
 
-func parseTemplate(fileName string, fileContent string, directive string) []byte { /*
-		var rPage = RecipePage{fileName, fileContent}
-
-		var t = template.Must(template.New("page").ParseFiles("basic_template.txt"))
-
-		var buf bytes.Buffer
-
-		t.ExecuteTemplate(&buf, "basic_template.txt", rPage)
-	*/
-
+func parseTemplate(fileName string, fileContent string, directive string) []byte { 
 	var rPage RecipePage
 	var t *template.Template
 	var buf bytes.Buffer
@@ -104,21 +100,25 @@ func parseTemplate(fileName string, fileContent string, directive string) []byte
 
 	switch directive {
 	case "root":
-//		fileNameSlice := getSliceOfFileNames("./recipes/")
-//		recipeNameSlice := getSliceOfRecipeNames("./recipes/")
-
-//		rPage = RecipePage{fileName, fileContent, fileNameSlice, recipeNameSlice}
-		templateFileName = []byte("index_template.txt")
-	case "recipe":
-//		rPage = RecipePage{fileName, fileContent, []string{""}, []string{""}}
-		templateFileName = []byte("index_template.txt")
-	}
-		templateFileName = []byte("index_template.txt")
-
+		// Get a slice of the recipes' title and file names.
 		fileNameSlice := getSliceOfFileNames("./recipes/")
 		recipeNameSlice := getSliceOfRecipeNames("./recipes/")
 
-	rPage = RecipePage{fileName, fileContent, fileNameSlice, recipeNameSlice}
+		/* Fill out the data structure accordingly. This template doesn't 
+		   use the first two fields bc they're for recipes */
+		rPage = RecipePage{"", "", fileNameSlice, recipeNameSlice}
+
+		// Template for the index page.
+		templateFileName = []byte("index_template.txt")
+
+	case "recipes":
+		/* Recipe template doesn't need every recipes' title/file name 
+                   so leave both blank */
+
+		// Template for the recipes page.
+		rPage = RecipePage{fileName, fileContent, []string{""}, []string{""}}
+		templateFileName = []byte("basic_template.txt")
+	}
 
 	t = template.Must(template.New("page").ParseFiles(string(templateFileName)))
 
@@ -127,54 +127,50 @@ func parseTemplate(fileName string, fileContent string, directive string) []byte
 	return buf.Bytes()
 }
 
-func prepareResponse(directive string, fileName string) ([]byte, error) {
+func responseHandler(directive string, fileName string) ([]byte, error) {
 	var response []byte
 	var err error
 	var fileContent []byte
 
 	switch directive {
-
 	case "root":
-		fileContent, err = getFileContent("index_template.txt", "root")
-//		fileContent, err = getFileContent(fileName, "root")
+		// Generate the template, no content to be filled out here.
+		response = []byte(parseTemplate(fileName, string(""), "root"))
 
-		response = []byte(parseTemplate(fileName, string(fileContent), "root"))
 	case "recipes":
+		// Get content of the recipe. 
+		fileContent, err = getFileContent(fileName, "recipes")
 
-//		fileContent, err = getFileContent("basic_template.txt", "template")
-		fileContent, err = getFileContent("index_template.txt", "root")
-
+		// Fill the recipes template with code.
 		response = []byte(parseTemplate(fileName, string(fileContent), "recipes"))
 	}
 
 	return response, err
 }
 
-func handler(w http.ResponseWriter, r *http.Request) {
+func pathHandler(w http.ResponseWriter, r *http.Request) {
 	var response []byte = []byte("Resource Not Found!")
 	var err error
 
 	var pathLength int = len(r.URL.Path)
 	var path string = r.URL.Path
 
-	/* Checks if path is at least /recipes, assumes there is more to the URL
-	   since it is ensuring that the length is greater than /recipes (8). */
-	if (pathLength > 9) && (path[1:8] == "recipes") {
-		response, err = prepareResponse("recipes", r.URL.Path[9:])
-		// r.URL.Path[8:] = /blah.go
-		//response = []byte(r.URL.Path[8:])
-		// Checks if path is root or exactly /recipes, loads homepage.
+	/* Checks if path is at least /recipes/, assumes there is more to the URL
+	   since it is ensuring that the length is greater than /recipes/ (9). */
+	if (pathLength > 9) && (path[:9] == "/recipes/") {
+
+		response, err = responseHandler("recipes", r.URL.Path[9:])
+
 	} else if ((path == "/") || (path == "/recipes") || (path == "/recipes/")){
-		response, err = prepareResponse("root", "")
-//		response = getFileContent(
+
+		response, err = responseHandler("root", "")
+
 	}
 
 	/* If there is any kind of error preparing the response,
-	   handle it by displaying the index page. */
+	   handle it */
 	if err != nil {
-//		response = []byte("ERROR, you've reached an invalid page." + string(err)) 
-//		panic(err)
-		response, _ = getFileContent("basic_template.txt", "template")
+		panic(err)
 	}
 
 	//Write response.
@@ -182,6 +178,6 @@ func handler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	http.HandleFunc("/", handler)
+	http.HandleFunc("/", pathHandler)
 	http.ListenAndServe(":3000", nil)
 }
