@@ -79,7 +79,8 @@ func getFileContent(fileName string, directive string) ([]byte, error) {
 	case "recipes":
 		fileContent, err = ioutil.ReadFile("recipes/" + fileName)
 
-	case "root":
+	case "root": 
+	case "template":
 		fileContent, err = ioutil.ReadFile(fileName)
 	}
 
@@ -103,15 +104,21 @@ func parseTemplate(fileName string, fileContent string, directive string) []byte
 
 	switch directive {
 	case "root":
+//		fileNameSlice := getSliceOfFileNames("./recipes/")
+//		recipeNameSlice := getSliceOfRecipeNames("./recipes/")
+
+//		rPage = RecipePage{fileName, fileContent, fileNameSlice, recipeNameSlice}
+		templateFileName = []byte("index_template.txt")
+	case "recipe":
+//		rPage = RecipePage{fileName, fileContent, []string{""}, []string{""}}
+		templateFileName = []byte("index_template.txt")
+	}
+		templateFileName = []byte("index_template.txt")
+
 		fileNameSlice := getSliceOfFileNames("./recipes/")
 		recipeNameSlice := getSliceOfRecipeNames("./recipes/")
 
-		rPage = RecipePage{fileName, fileContent, fileNameSlice, recipeNameSlice}
-		templateFileName = []byte("index_template.txt")
-	case "recipe":
-		rPage = RecipePage{fileName, fileContent, []string{""}, []string{""}}
-		templateFileName = []byte("basic_template.txt")
-	}
+	rPage = RecipePage{fileName, fileContent, fileNameSlice, recipeNameSlice}
 
 	t = template.Must(template.New("page").ParseFiles(string(templateFileName)))
 
@@ -128,13 +135,14 @@ func prepareResponse(directive string, fileName string) ([]byte, error) {
 	switch directive {
 
 	case "root":
-		response, err = getFileContent("index_template.txt", "root")
+		fileContent, err = getFileContent("index_template.txt", "root")
 //		fileContent, err = getFileContent(fileName, "root")
 
 		response = []byte(parseTemplate(fileName, string(fileContent), "root"))
 	case "recipes":
 
-		fileContent, err = getFileContent(fileName, "recipes")
+//		fileContent, err = getFileContent("basic_template.txt", "template")
+		fileContent, err = getFileContent("index_template.txt", "root")
 
 		response = []byte(parseTemplate(fileName, string(fileContent), "recipes"))
 	}
@@ -144,24 +152,29 @@ func prepareResponse(directive string, fileName string) ([]byte, error) {
 
 func handler(w http.ResponseWriter, r *http.Request) {
 	var response []byte = []byte("Resource Not Found!")
-
 	var err error
+
+	var pathLength int = len(r.URL.Path)
+	var path string = r.URL.Path
 
 	/* Checks if path is at least /recipes, assumes there is more to the URL
 	   since it is ensuring that the length is greater than /recipes (8). */
-	if (len(r.URL.Path) > 8) && (r.URL.Path[1:8] == "recipes") {
-		response, err = prepareResponse("recipes", r.URL.Path[8:])
-
+	if (pathLength > 9) && (path[1:8] == "recipes") {
+		response, err = prepareResponse("recipes", r.URL.Path[9:])
+		// r.URL.Path[8:] = /blah.go
+		//response = []byte(r.URL.Path[8:])
 		// Checks if path is root or exactly /recipes, loads homepage.
-	} else if (r.URL.Path == "/") || (r.URL.Path[1:8] == "recipes") {
+	} else if ((path == "/") || (path == "/recipes") || (path == "/recipes/")){
 		response, err = prepareResponse("root", "")
+//		response = getFileContent(
 	}
 
 	/* If there is any kind of error preparing the response,
 	   handle it by displaying the index page. */
 	if err != nil {
-	//	response = []byte("ERROR, you've reached an invalid page." + string(err)) 
-		panic(err)
+//		response = []byte("ERROR, you've reached an invalid page." + string(err)) 
+//		panic(err)
+		response, _ = getFileContent("basic_template.txt", "template")
 	}
 
 	//Write response.
