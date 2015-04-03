@@ -10,11 +10,10 @@ import (
 	"bufio"
 )
 
-/* Considered creating diff structs for each directive but 
-   that means more coding and more things to keep track of...
-   Who knows, maybe there will be a need for a page to keep
-   track of all of this info. Maybe the master struct should 
-   be an aggregation of all of the different structs? */
+/* Considered creating diff structs for each directive but that means more 
+   coding and more things to keep track of... Who knows, maybe there will be a 
+   need for a page to keep track of all of this info. Maybe the master struct 
+   should be an aggregation of all of the different structs? */
 type RecipePage struct {
 	Title, Content       string
 	RecipeName []string
@@ -78,6 +77,9 @@ func (self RecipePage) GenerateLinks() template.HTML {
 	return template.HTML(buffer.String())
 }
 
+/* Return the contents of a file as a slice of bytes. The directive tells the 
+   function where to look for the files. For instance, all recipes reside in the
+   recipes folder. Need to place templates in their own folder... */
 func getFileContent(fileName string, directive string) ([]byte, error) {
 	var err error
 	var fileContent []byte
@@ -93,6 +95,9 @@ func getFileContent(fileName string, directive string) ([]byte, error) {
 	return fileContent, err
 }
 
+/* parseTemplate is called by responseHandler. This function receives the 
+   information needed such as file names so that it could run said data 
+   against the template and return the result. */ 
 func parseTemplate(fileName string, fileContent string, directive string) []byte { 
 	var rPage RecipePage
 	var t *template.Template
@@ -105,8 +110,8 @@ func parseTemplate(fileName string, fileContent string, directive string) []byte
 		fileNameSlice := getSliceOfFileNames("./recipes/")
 		recipeNameSlice := getSliceOfRecipeNames("./recipes/")
 
-		/* Fill out the data structure accordingly. This template doesn't 
-		   use the first two fields bc they're for recipes */
+		/* Fill out the data structure accordingly. This template 
+                   doesn't use the first two fields bc they're for recipes */
 		rPage = RecipePage{"", "", recipeNameSlice, fileNameSlice}
 
 		// Template for the index page.
@@ -128,6 +133,9 @@ func parseTemplate(fileName string, fileContent string, directive string) []byte
 	return buf.Bytes()
 }
 
+
+/* Based on the directive given, responseHandler calls parseTemplate so that
+   the final, complete response */
 func responseHandler(directive string, fileName string) ([]byte, error) {
 	var response []byte
 	var err error
@@ -149,6 +157,13 @@ func responseHandler(directive string, fileName string) ([]byte, error) {
 	return response, err
 }
 
+/* The most important thing pathHandler does is determine whether the resource 
+   is valid. Depending on whether the desired resource is the root of the page
+   or a recipe, pathHandler will call responseHandler to prepare a response 
+   to the request received. A directive is included to responseHandler as the
+   first argument. Since the responses are prepared differently, this tells the 
+   function whether it is receiving a path for a recipe or for the root page. 
+   There is no functionality to display an invalid resource at the moment. */
 func pathHandler(w http.ResponseWriter, r *http.Request) {
 	var response []byte = []byte("Resource Not Found!")
 	var err error
@@ -178,6 +193,8 @@ func pathHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "%s", string(response))
 }
 
+
+// The pathHandler function is responsible to handling all requests. 
 func main() {
 	http.HandleFunc("/", pathHandler)
 	http.ListenAndServe(":8080", nil)
