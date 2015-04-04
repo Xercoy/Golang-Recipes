@@ -114,17 +114,15 @@ func parseTemplate(fileName string, fileContent string, directive string) []byte
                    doesn't use the first two fields bc they're for recipes */
 		rPage = RecipePage{"", "", recipeNameSlice, fileNameSlice}
 
-		// Template for the index page.
-		templateFileName = []byte("index_template.txt")
-
 	case "recipes":
 		/* Recipe template doesn't need every recipes' title/file name 
                    so leave both blank */
 
 		// Template for the recipes page.
 		rPage = RecipePage{fileName, fileContent, []string{""}, []string{""}}
-		templateFileName = []byte("basic_template.txt")
 	}
+
+	templateFileName = []byte(directive + ".txt")
 
 	t = template.Must(template.New("page").ParseFiles(string(templateFileName)))
 
