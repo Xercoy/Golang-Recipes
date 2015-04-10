@@ -8,7 +8,10 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"strings"
 )
+
+const recipesPath string = "./recipes/"
 
 /* Considered creating diff structs for each directive but that means more
    coding and more things to keep track of... Who knows, maybe there will be a
@@ -173,10 +176,12 @@ func pathHandler(w http.ResponseWriter, r *http.Request) {
 
 		response, err = responseHandler("recipes", r.URL.Path[9:])
 
-	} else if (path == "/") || (path == "/recipes") || (path == "/recipes/") {
+	} else if (path == "/") || 
+                  strings.Contains(recipesPath, "/recipes") || 
+                  strings.Contains(recipesPath, "/recipes") || 
+                  strings.Contains(recipesPath, "/recipes/") {
 
 		response, err = responseHandler("root", "")
-
 	}
 
 	/* If there is any kind of error preparing the response,
