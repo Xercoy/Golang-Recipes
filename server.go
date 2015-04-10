@@ -8,10 +8,11 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
-	"strings"
+//	"strings"
 )
 
-const recipesPath string = "./recipes/"
+//const recipesPath string = "./recipes/" 
+const recipesPath string = "recipes"
 
 /* Considered creating diff structs for each directive but that means more
    coding and more things to keep track of... Who knows, maybe there will be a
@@ -177,9 +178,8 @@ func pathHandler(w http.ResponseWriter, r *http.Request) {
 		response, err = responseHandler("recipes", r.URL.Path[9:])
 
 	} else if (path == "/") || 
-                  strings.Contains(recipesPath, "/recipes") || 
-                  strings.Contains(recipesPath, "/recipes") || 
-                  strings.Contains(recipesPath, "/recipes/") {
+		path == ("/" + recipesPath) || // /recipes 
+		path == ("/" + recipesPath + "/") { // /recipes/
 
 		response, err = responseHandler("root", "")
 	}
