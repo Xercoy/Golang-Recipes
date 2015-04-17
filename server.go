@@ -19,7 +19,7 @@ const recipesPath string = "recipes"
    coding and more things to keep track of... Who knows, maybe there will be a
    need for a page to keep track of all of this info. Maybe the master struct
    should be an aggregation of all of the different structs? */
-type RecipePage struct {
+type PageContent struct {
 	Title, Content string
 	RecipeName     []string
 	FileName       []string
@@ -75,7 +75,7 @@ func getSliceOfRecipeNames(dir string) []string {
 
 /* This function will be called from within the index template. A recipePage has */
 // Appending a string: http://stackoverflow.com/questions/1760757/how-to-efficiently-concatenate-strings-in-go
-func (self RecipePage) GenerateLinks() template.HTML {
+func (self PageContent) GenerateLinks() template.HTML {
 	var buffer bytes.Buffer
 
 	for index, rName := range self.RecipeName {
@@ -109,7 +109,7 @@ func getFileContent(fileName string, directive string) ([]byte, error) {
    information needed such as file names so that it could run said data
    against the template and return the result. */
 func parseTemplate(fileName string, fileContent string, directive string) []byte {
-	var rPage RecipePage
+	var page PageContent
 	var t *template.Template
 	var buf bytes.Buffer
 	var templateFileName []byte
@@ -122,21 +122,21 @@ func parseTemplate(fileName string, fileContent string, directive string) []byte
 
 		/* Fill out the data structure accordingly. This template
 		   doesn't use the first two fields bc they're for recipes */
-		rPage = RecipePage{"", "", recipeNameSlice, fileNameSlice}
+		page = PageContent{"", "", recipeNameSlice, fileNameSlice}
 
 	case "recipes":
 		/* Recipe template doesn't need every recipes' title/file name
 		   so leave both blank */
 
 		// Template for the recipes page.
-		rPage = RecipePage{fileName, fileContent, []string{""}, []string{""}}
+		page = PageContent{fileName, fileContent, []string{""}, []string{""}}
 	}
 
 	templateFileName = []byte(directive + ".txt")
 
 	t = template.Must(template.New("page").ParseFiles(string(templateFileName)))
 
-	t.ExecuteTemplate(&buf, string(templateFileName), rPage)
+	t.ExecuteTemplate(&buf, string(templateFileName), page)
 
 	return buf.Bytes()
 }
