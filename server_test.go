@@ -69,19 +69,11 @@ func TestInvalidIndexPages(t *testing.T) {
 	var testUrls = []string{"http://golang.recipes/recipesxxx/", // with '/'
 		"http://golang.recipes/recipes/xxxxxx/xxxx"} // after two levels
 
-	/* Get body for a page that is definitely invalid so that we can 
-           compare. */
+	/* Get resp + body for a page that is definitely invalid to compare. */
 	posBadUrlResp, err = http.Get("http://golang.recipes/xxxxxx")
 	panicIfNotNil(err)
-/*	if err != nil {
-		panic(err)
-	} */
-
 	posBadUrlBody, err := ioutil.ReadAll(posBadUrlResp.Body)
 	panicIfNotNil(err)
-/*	if err != nil {
-		panic(err)
-	} */
 
 	/* Iterate through test urls to determine whether they can be reached. 
            If so, append to the slice pagesReached so that tester can be 
@@ -89,9 +81,6 @@ func TestInvalidIndexPages(t *testing.T) {
 	for _, url := range testUrls {
 		testUrlResp, err = http.Get(url)
 		panicIfNotNil(err)
-/*		if err != nil {
-			panic(err)
-		} */
 
 		testUrlBody, err := ioutil.ReadAll(testUrlResp.Body)
 		// A response body will never be nil, even on an empty request.

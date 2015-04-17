@@ -11,7 +11,8 @@ import (
 //	"strings"
 )
 
-//const recipesPath string = "./recipes/" 
+// const recipesPath string = "./recipes/" 
+// Need to refactor ~152 where recipe path is hard coded.
 const recipesPath string = "recipes"
 
 /* Considered creating diff structs for each directive but that means more
@@ -24,6 +25,8 @@ type RecipePage struct {
 	FileName       []string
 }
 
+/* Read directory from given arg, return a slice of all the file names
+   in that directory. */
 func getSliceOfFileNames(dir string) []string {
 	var sliceOfFileInfos []os.FileInfo
 	var err error
@@ -41,6 +44,9 @@ func getSliceOfFileNames(dir string) []string {
 	return fileNames
 }
 
+/* All recipes are named on the first line of every .go file after the line 
+   comment symbol //. Open up every recipe and return a string slice of every 
+   single one. */
 func getSliceOfRecipeNames(dir string) []string {
 	fileNames := getSliceOfFileNames(dir)
 
@@ -67,6 +73,7 @@ func getSliceOfRecipeNames(dir string) []string {
 	return rNames
 }
 
+/* This function will be called from within the index template. A recipePage has */
 // Appending a string: http://stackoverflow.com/questions/1760757/how-to-efficiently-concatenate-strings-in-go
 func (self RecipePage) GenerateLinks() template.HTML {
 	var buffer bytes.Buffer
@@ -135,7 +142,7 @@ func parseTemplate(fileName string, fileContent string, directive string) []byte
 }
 
 /* Based on the directive given, responseHandler calls parseTemplate so that
-   the final, complete response */
+   the final, complete response can be returned to pathHandler */
 func responseHandler(directive string, fileName string) ([]byte, error) {
 	var response []byte
 	var err error
@@ -165,7 +172,7 @@ func responseHandler(directive string, fileName string) ([]byte, error) {
    function whether it is receiving a path for a recipe or for the root page.
    There is no functionality to display an invalid resource at the moment. */
 func pathHandler(w http.ResponseWriter, r *http.Request) {
-	var response []byte = []byte("Resource Not Found!")
+	var response []byte = []byte("Resource not found!")
 	var err error
 
 	var pathLength int = len(r.URL.Path)
@@ -196,6 +203,12 @@ func pathHandler(w http.ResponseWriter, r *http.Request) {
 
 // The pathHandler function is responsible to handling all requests.
 func main() {
+
+	/* Register the root pattern to the default serveMux, along w/ the 
+           function that will be handling that pattern. */
 	http.HandleFunc("/", pathHandler)
+
+	/* Using default serveMux, should really look into this to simplify
+           routing. */
 	http.ListenAndServe(":8080", nil)
 }
