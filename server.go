@@ -21,8 +21,8 @@ const recipesPath string = "recipes"
    should be an aggregation of all of the different structs? */
 type PageContent struct {
 	Title, Content string
-	RecipeName     []string
-	FileName       []string
+	RecipeNames     []string
+	FileNames       []string
 }
 
 /* Read directory from given arg, return a slice of all the file names
@@ -78,8 +78,8 @@ func getSliceOfRecipeNames(dir string) []string {
 func (self PageContent) GenerateLinks() template.HTML {
 	var buffer bytes.Buffer
 
-	for index, rName := range self.RecipeName {
-		link := "<p><a href=\"/recipes/" + self.FileName[index] + "\">" + rName + "</a></p>"
+	for index, rName := range self.RecipeNames {
+		link := "<p><a href=\"/recipes/" + self.FileNames[index] + "\">" + rName + "</a></p>"
 
 		buffer.WriteString(link)
 	}
