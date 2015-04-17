@@ -9,8 +9,15 @@ import(
 	"os"
 )
 
-/* all functions need to start with the word Test, any other chars can come 
+/* all functions need to start with the word Test, any other chars can come
    afterwards provided that the first char is not a lowercase letter. */
+
+// Helper function, replaces 3 lines of error checking with 1.
+func panicIfNotNil(e error) {
+	if e != nil {
+		panic(e)
+	}
+}
 
 // Ping Google to test network connection.
 func TestGetRequestSuccess(t *testing.T) {
@@ -21,9 +28,7 @@ func TestGetRequestSuccess(t *testing.T) {
 	}
 
 	body, _ := ioutil.ReadAll(response.Body)
-	
-//	fmt.Printf("%s", body)
-	
+
 	if (strings.Contains(string(body), "Google Search") != true) {
 		t.Errorf("Cannot find page!")
 	}
@@ -31,7 +36,7 @@ func TestGetRequestSuccess(t *testing.T) {
 
 /* Make sure server is on. Planning on adding capabilities to start it if not...
    I don't think the http or http/test packages have a way of stopping a go test
-   routine if one of the tests fail. If this test fails, there's no need to run 
+   routine if one of the tests fail. If this test fails, there's no need to run
    the remaining tests. Thus, let tester know that it failed then exit. */
 func TestServerIsOnline(t *testing.T) {
 
@@ -44,52 +49,65 @@ func TestServerIsOnline(t *testing.T) {
 
 	if (strings.Contains(string(body), "Golang Recipes") != true) {
 		t.Errorf("Cannot find page!")
-	
-		fmt.Println("ERROR: TestServerIsOnline Failed.")	
+
+		fmt.Println("ERROR: TestServerIsOnline Failed.")
 
 	os.Exit(1)
 	}
 }
 
-func TestInvalidPageReachedFromIndex(t *testing.T) {
-	
-	response, err := http.Get("http://golang.recipes/eofvfduof")
-	if (err != nil) {
-		t.Errorf("%v", err)
+func TestInvalidIndexPages(t *testing.T) {
+	/* Two responses, one that is definitely bad, and another that might be 
+           bad. Since an error page may change over time, compare the two bodies
+           instead of hardcoding anything. */
+	var testUrlResp* http.Response 
+	var posBadUrlResp* http.Response
+	var err error
+	var pagesReached []string // If we get through to any, keep track of it.
+
+	// Urls being tested
+	var testUrls = []string{"http://golang.recipes/recipesxxx/", // with '/'
+		"http://golang.recipes/recipes/xxxxxx/xxxx"} // after two levels
+
+	/* Get body for a page that is definitely invalid so that we can 
+           compare. */
+	posBadUrlResp, err = http.Get("http://golang.recipes/xxxxxx")
+	panicIfNotNil(err)
+/*	if err != nil {
+		panic(err)
+	} */
+
+	posBadUrlBody, err := ioutil.ReadAll(posBadUrlResp.Body)
+	panicIfNotNil(err)
+/*	if err != nil {
+		panic(err)
+	} */
+
+	/* Iterate through test urls to determine whether they can be reached. 
+           If so, append to the slice pagesReached so that tester can be 
+           notified. */
+	for _, url := range testUrls {
+		testUrlResp, err = http.Get(url)
+		panicIfNotNil(err)
+/*		if err != nil {
+			panic(err)
+		} */
+
+		testUrlBody, err := ioutil.ReadAll(testUrlResp.Body)
+		// A response body will never be nil, even on an empty request.
+		if len(testUrlBody) == 0 {
+			panic(err)
+		}
+
+		// Compare body of an invalid page to the url being tested.
+		if string(testUrlBody) == string(posBadUrlBody) {
+			pagesReached = append(pagesReached, url)
+		}
+
+		testUrlResp.Body.Close()
 	}
 
-	body, _ := ioutil.ReadAll(response.Body)
-
-	if (strings.Contains(string(body), "resource not found")) != true {
-		t.Errorf("Reached valid page with invalid URL.")
+	if pagesReached != nil {
+		t.Errorf("\nPages reached: %v\n", pagesReached)
 	}
 }
-
-func TestInvalidPageReachedFomIndex(t *testing.T) {
-
-	var invalidPages = []string{"golang.recipesesofiheofih/",
-		"golang.recipes/recipeskjgku/",
-		"golang.recipes/recipes/lugluygkuyg",
-		"golang.recipes/recipes/sdfihcdso/dfidsfoih"}
-
-	var failedPages = []string{}
-
-	for _, key := range invalidPages {
-		response, err := http.Get(key)
-		if err != nil {
-			t.Errorf("%v", err)
-		}
-		
-		body, _ := ioutil.ReadAll(response.Body)
-		
-		if (strings.Contains(string(body), "resource not found")) != true {
-			failedPages = append(failedPages, key)
-		}
-	}
-
-	if len(failedPages) != 0 {
-		t.Errorf("Failed Pages")
-	}
-
-}
-
