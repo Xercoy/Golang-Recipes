@@ -12,7 +12,7 @@ import (
 )
 
 // const recipesPath string = "./recipes/" 
-// Need to refactor ~152 where recipe path is hard coded.
+// Need to refactor ~,99, 120, 121, 152 where recipe path is hard coded.
 const recipesPath string = "recipes"
 
 /* Considered creating diff structs for each directive but that means more
