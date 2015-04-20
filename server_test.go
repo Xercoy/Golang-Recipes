@@ -32,6 +32,8 @@ func TestGetRequestSuccess(t *testing.T) {
 	if (strings.Contains(string(body), "Google Search") != true) {
 		t.Errorf("Cannot find page!")
 	}
+
+	fmt.Printf("\nTestGetRequestSuccess PASS - Test network connection.\n")
 }
 
 /* Make sure server is on. Planning on adding capabilities to start it if not...
@@ -54,6 +56,8 @@ func TestServerIsOnline(t *testing.T) {
 
 	os.Exit(1)
 	}
+
+	fmt.Printf("\nTestServerIsOnline PASS - Test if server is up.\n")
 }
 
 func TestInvalidIndexPages(t *testing.T) {
@@ -88,8 +92,9 @@ func TestInvalidIndexPages(t *testing.T) {
 			panic(err)
 		}
 
-		// Compare body of an invalid page to the url being tested.
-		if string(testUrlBody) == string(posBadUrlBody) {
+		/* Compare body of an invalid page to the url being tested.
+		   If not equal, then the page is valid.*/ 
+		if string(testUrlBody) != string(posBadUrlBody) {
 			pagesReached = append(pagesReached, url)
 		}
 
@@ -99,4 +104,6 @@ func TestInvalidIndexPages(t *testing.T) {
 	if pagesReached != nil {
 		t.Errorf("\nPages reached: %v\n", pagesReached)
 	}
+
+	fmt.Printf("\nTestInvalidIndexPages PASS - test to ensure bad pages.\n\n")
 }
